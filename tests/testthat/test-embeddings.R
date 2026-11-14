@@ -3,7 +3,11 @@ test_that("ai_embed and DuckDB embedding index retrieve most similar studies", {
   s_ct2 <- dicomtk::dicom_synthesize(modality = "CT", dims = c(16L, 16L, 4L))
   s_mr  <- dicomtk::dicom_synthesize(modality = "MR", dims = c(16L, 16L, 4L))
   db_path <- tempfile(fileext = ".duckdb")
-  on.exit(unlink(c(s_ct1[["out_dir"]], s_ct2[["out_dir"]], s_mr[["out_dir"]], db_path), recursive = TRUE), add = TRUE)
+  idx <- ai_embedding_index(db_path)
+  on.exit({
+    ai_index_close(idx)
+    unlink(c(s_ct1[["out_dir"]], s_ct2[["out_dir"]], s_mr[["out_dir"]], db_path, paste0(db_path, ".wal")), recursive = TRUE)
+  }, add = TRUE)
 
   v_ct1 <- dicomtk::read_dicom_volume(s_ct1[["out_dir"]])
   v_ct2 <- dicomtk::read_dicom_volume(s_ct2[["out_dir"]])
@@ -13,9 +17,6 @@ test_that("ai_embed and DuckDB embedding index retrieve most similar studies", {
   emb <- ai_embed(v_ct1, backend = "offline")
   expect_true(is.numeric(emb) && length(emb) >= 16L)
   expect_equal(sum(emb^2), 1.0, tolerance = 1e-6)
-
-  idx <- ai_embedding_index(db_path)
-  on.exit(ai_index_close(idx), add = TRUE)
 
   ai_index_add(idx, study_id = "ct_study_1", vol = v_ct1, metadata = list(body_part = "CHEST"))
   ai_index_add(idx, study_id = "mr_study_1", vol = v_mr, metadata = list(body_part = "BRAIN"))

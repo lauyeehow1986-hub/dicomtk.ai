@@ -26,6 +26,8 @@
 #'
 #' @return A list with `text` (de-identified string), `spans` (tibble of
 #'   detected PHI spans), and `mode`.
+#' @examples
+#' ai_deid_report("Patient John Tan (MRN: MRN-12345) scanned on 2026-03-14.")
 #' @export
 ai_deid_report <- function(x,
                            backend = "presidio",
@@ -57,6 +59,43 @@ ai_deid_report <- function(x,
           end = en,
           text = substr(txt, st, en)
         )
+      }
+    }
+  }
+
+  # Optional custom backend predict_fn (monotonically unioned; can never remove regex spans)
+  if (is.function(spec$predict_fn)) {
+    custom_spans <- tryCatch(spec$predict_fn(txt, spec), error = function(e) NULL)
+    if (is.data.frame(custom_spans) && nrow(custom_spans) > 0L) {
+      for (idx in seq_len(nrow(custom_spans))) {
+        st <- as.integer(custom_spans$start[idx])
+        en <- as.integer(custom_spans$end[idx])
+        span_rows[[length(span_rows) + 1L]] <- tibble::tibble(
+          entity_type = as.character(custom_spans$entity_type[idx] %||% "PHI"),
+          start = st,
+          end = en,
+          text = substr(txt, st, en)
+        )
+      }
+    }
+  }
+
+  # Optional LLM contextual audit pass (monotonically unioned)
+  if (!is.null(chat)) {
+    chat_obj <- as_ellmer_chat(chat)
+    if (is.function(chat_obj$audit_fn)) {
+      llm_spans <- tryCatch(chat_obj$audit_fn(txt), error = function(e) NULL)
+      if (is.data.frame(llm_spans) && nrow(llm_spans) > 0L) {
+        for (idx in seq_len(nrow(llm_spans))) {
+          st <- as.integer(llm_spans$start[idx])
+          en <- as.integer(llm_spans$end[idx])
+          span_rows[[length(span_rows) + 1L]] <- tibble::tibble(
+            entity_type = as.character(llm_spans$entity_type[idx] %||% "PHI"),
+            start = st,
+            end = en,
+            text = substr(txt, st, en)
+          )
+        }
       }
     }
   }

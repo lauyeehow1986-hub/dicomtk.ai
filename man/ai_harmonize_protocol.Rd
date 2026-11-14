@@ -23,3 +23,7 @@ Maps heterogeneous \code{SeriesDescription}, \code{Modality}, and \code{BodyPart
 headers onto standardized LOINC-RSNA Radiology Playbook IDs (\code{rpid}) and
 \code{RadLex} anatomical identifiers (\code{radlex_id}).
 }
+\examples{
+df <- data.frame(SeriesDescription = "CHEST WO CON 3.0mm", Modality = "CT")
+ai_harmonize_protocol(df)
+}

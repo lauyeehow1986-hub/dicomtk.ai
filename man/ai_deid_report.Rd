@@ -32,3 +32,6 @@ radiology reports or \code{dicom_sr} objects using a registered NLP backend
 Enforces a monotonic union invariant: optional LLM audit passes can only add
 missed spans, never remove deterministic detections.
 }
+\examples{
+ai_deid_report("Patient John Tan (MRN: MRN-12345) scanned on 2026-03-14.")
+}

@@ -37,3 +37,6 @@ An object of class \code{"dicom_ai_chat"}.
 Creates a \code{"dicom_ai_chat"} object wrapping an \code{ellmer} chat client (or a
 deterministic \code{"offline"} rule-based planner for CI and air-gapped testing).
 }
+\examples{
+chat <- ai_chat("offline")
+}

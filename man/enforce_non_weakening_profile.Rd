@@ -38,3 +38,7 @@ Validates or clamps any agent-proposed overrides, options, or policy flags
 against a baseline \code{\link[dicomtk:dicom_deid_profile]{dicomtk::dicom_deid_profile()}} along the strict
 PS3.15 join-semilattice \verb{K < C < U < D < Z < X}.
 }
+\examples{
+base <- dicomtk::dicom_deid_profile("ps3.15")
+stronger <- enforce_non_weakening_profile(base, override_tags = list("(0008,1030)" = "X"))
+}

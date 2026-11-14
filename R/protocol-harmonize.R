@@ -19,6 +19,9 @@
 #' @return A [tibble::tibble] with columns `SeriesDescription`, `Modality`,
 #'   `rpid`, `long_common_name`, `short_name`, `body_region`, `radlex_id`,
 #'   `contrast`, and `confidence`.
+#' @examples
+#' df <- data.frame(SeriesDescription = "CHEST WO CON 3.0mm", Modality = "CT")
+#' ai_harmonize_protocol(df)
 #' @export
 ai_harmonize_protocol <- function(headers, chat = NULL) {
   if (!is.data.frame(headers) || !("SeriesDescription" %in% names(headers))) {

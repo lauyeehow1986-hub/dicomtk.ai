@@ -22,3 +22,6 @@ Extracts structured pathology findings with assertion polarity (\code{"present"}
 \code{"absent"}, or \code{"uncertain"}) using deterministic ConText negation/uncertainty
 rules (when \code{"offline"}) or an \code{ellmer} structured-output chat session.
 }
+\examples{
+ai_extract_labels("No evidence of pneumothorax. Moderate pleural effusion.")
+}

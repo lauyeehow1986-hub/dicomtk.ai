@@ -16,3 +16,6 @@ A \link[tibble:tibble]{tibble::tibble} summarizing registered backends.
 \description{
 List Registered AI Backends
 }
+\examples{
+list_ai_backends()
+}

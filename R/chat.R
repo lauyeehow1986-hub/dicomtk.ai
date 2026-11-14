@@ -15,6 +15,8 @@
 #'   constructor.
 #'
 #' @return An object of class `"dicom_ai_chat"`.
+#' @examples
+#' chat <- ai_chat("offline")
 #' @export
 ai_chat <- function(provider = c("offline", "ollama", "openai", "anthropic", "gemini", "openai_compatible"),
                     model = NULL,

@@ -34,3 +34,9 @@ An S3 \code{"dicom_agent_plan"} object at \code{stage = "planned"}.
 Stage 1 of the 5-stage clinical agent loop (\code{plan -> dry-run -> approve -> execute -> verify}). Enforces the non-weakening de-identification guardrail
 up front.
 }
+\examples{
+synth <- dicomtk::dicom_synthesize(modality = "CT", dims = c(8L, 8L, 2L))
+on.exit(unlink(synth$out_dir, recursive = TRUE), add = TRUE)
+plan <- ai_agent_plan("deid_only", path = synth$out_dir)
+dry <- ai_agent_dry_run(plan)
+}

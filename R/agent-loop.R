@@ -13,6 +13,11 @@
 #' @param chat A `"dicom_ai_chat"` object from [ai_chat()].
 #'
 #' @return An S3 `"dicom_agent_plan"` object at `stage = "planned"`.
+#' @examples
+#' synth <- dicomtk::dicom_synthesize(modality = "CT", dims = c(8L, 8L, 2L))
+#' on.exit(unlink(synth$out_dir, recursive = TRUE), add = TRUE)
+#' plan <- ai_agent_plan("deid_only", path = synth$out_dir)
+#' dry <- ai_agent_dry_run(plan)
 #' @export
 ai_agent_plan <- function(task = c("deid_and_qc", "deid_only", "qc_only"),
                           path,
@@ -145,13 +150,20 @@ ai_agent_execute <- function(approved_plan, out_dir) {
   }
   ai_check_scalar_chr(out_dir, "out_dir")
 
-  # Defense-in-depth re-check before execution
-  enforce_non_weakening_profile(
+  # Defense-in-depth re-check before execution (prevents post-approval TOCTOU tampering)
+  verified_profile <- enforce_non_weakening_profile(
     baseline = approved_plan$baseline_profile,
     override_tags = approved_plan$override_tags,
     options = approved_plan$options,
     mode = "reject"
   )
+  eff <- approved_plan$effective_profile
+  if (!inherits(eff, "dicom_deid_profile") ||
+      !identical(eff$deidentify, verified_profile$deidentify) ||
+      !identical(eff$patient_deid, verified_profile$patient_deid) ||
+      !identical(eff$tags$action, verified_profile$tags$action)) {
+    cli::cli_abort("Tampering detected: {.field effective_profile} was modified or weakened after approval.")
+  }
 
   dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
   deid_res <- NULL
@@ -159,7 +171,7 @@ ai_agent_execute <- function(approved_plan, out_dir) {
     deid_res <- dicomtk::dicom_deid(
       path = approved_plan$path,
       out_dir = out_dir,
-      profile = approved_plan$effective_profile,
+      profile = verified_profile,
       override_tags = approved_plan$override_tags,
       overwrite = TRUE
     )

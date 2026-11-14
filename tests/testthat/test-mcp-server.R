@@ -3,7 +3,7 @@ test_that("dicomtk_mcp_tools builds ellmer ToolDefs and enforces tool_reject on 
   expect_true(is.list(tools))
   expect_true(all(c(
     "inspect_headers", "image_qc", "deid_dry_run",
-    "deid_verify", "harmonize_protocol", "ai_segment"
+    "deid_verify", "harmonize_protocol", "ai_segment", "search_similar"
   ) %in% names(tools)))
   expect_true(inherits(tools$inspect_headers, "ellmer::ToolDef") || is.function(tools$inspect_headers))
 

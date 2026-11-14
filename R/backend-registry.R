@@ -101,6 +101,8 @@ get_ai_backend <- function(name) {
 #' @param task Optional task filter (`"segmentation"`, `"nlp_deid"`, `"ocr"`,
 #'   or `"embedding"`).
 #' @return A [tibble::tibble] summarizing registered backends.
+#' @examples
+#' list_ai_backends()
 #' @export
 list_ai_backends <- function(task = NULL) {
   if (is.null(.ai_env$backends)) {

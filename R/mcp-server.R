@@ -5,6 +5,9 @@
 #' residual-PHI verification, protocol harmonisation, and AI segmentation.
 #'
 #' @return A named list of `ellmer` `ToolDef` objects.
+#' @examples
+#' tools <- dicomtk_mcp_tools()
+#' names(tools)
 #' @export
 dicomtk_mcp_tools <- function() {
   t_inspect <- ellmer::tool(
@@ -36,24 +39,23 @@ dicomtk_mcp_tools <- function() {
 
   t_dry_run <- ellmer::tool(
     fun = function(path, profile = "ps3.15", override_json = "{}") {
-      ov <- if (nzchar(trimws(override_json))) {
-        jsonlite::fromJSON(override_json, simplifyVector = FALSE)
-      } else {
-        list()
-      }
-      base_prof <- dicomtk::dicom_deid_profile(profile = profile)
-      plan <- tryCatch(
-        ai_agent_plan(
+      tryCatch({
+        ov <- if (nzchar(trimws(override_json))) {
+          jsonlite::fromJSON(override_json, simplifyVector = FALSE)
+        } else {
+          list()
+        }
+        base_prof <- dicomtk::dicom_deid_profile(profile = profile)
+        plan <- ai_agent_plan(
           task = "deid_and_qc",
           path = path,
           baseline_profile = base_prof,
           override_tags = ov,
           chat = ai_chat("offline")
-        ),
-        error = function(e) ellmer::tool_reject(conditionMessage(e))
-      )
-      dry <- ai_agent_dry_run(plan)
-      jsonlite::toJSON(dry$dry_run, auto_unbox = TRUE)
+        )
+        dry <- ai_agent_dry_run(plan)
+        jsonlite::toJSON(dry$dry_run, auto_unbox = TRUE)
+      }, error = function(e) ellmer::tool_reject(conditionMessage(e)))
     },
     name = "deid_dry_run",
     description = "Plan and dry-run a DICOM de-identification workflow without weakening the baseline profile.",
@@ -116,13 +118,32 @@ dicomtk_mcp_tools <- function() {
     annotations = ellmer::tool_annotations(read_only_hint = TRUE)
   )
 
+  t_search <- ellmer::tool(
+    fun = function(db_path, query_path, k = 5L) {
+      idx <- ai_embedding_index(db_path = db_path)
+      on.exit(ai_index_close(idx), add = TRUE)
+      q_vol <- dicomtk::read_dicom_volume(query_path, warn = FALSE)
+      hits <- ai_search_similar(idx, query_vol = q_vol, k = as.integer(k))
+      jsonlite::toJSON(hits, auto_unbox = TRUE)
+    },
+    name = "search_similar",
+    description = "Search a DuckDB study embedding index for the top-k most similar DICOM volumes.",
+    arguments = list(
+      db_path = ellmer::type_string("Path to the DuckDB embedding index file."),
+      query_path = ellmer::type_string("Path to the query DICOM file or series directory."),
+      k = ellmer::type_integer("Number of nearest neighbors to return.", required = FALSE)
+    ),
+    annotations = ellmer::tool_annotations(read_only_hint = TRUE)
+  )
+
   list(
     inspect_headers = t_inspect,
     image_qc = t_qc,
     deid_dry_run = t_dry_run,
     deid_verify = t_verify,
     harmonize_protocol = t_harmonize,
-    ai_segment = t_seg
+    ai_segment = t_seg,
+    search_similar = t_search
   )
 }
 

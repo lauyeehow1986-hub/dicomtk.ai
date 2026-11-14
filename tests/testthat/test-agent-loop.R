@@ -39,4 +39,9 @@ test_that("ai_chat and 5-stage agent loop execute safely with approval gate and 
   ver <- ai_agent_verify(exec_res)
   expect_equal(ver$stage, "verified")
   expect_true(isTRUE(ver$passed))
+
+  # Defense-in-depth: post-approval TOCTOU tampering with effective_profile must be blocked
+  tampered <- approved
+  tampered$effective_profile$deidentify <- FALSE
+  expect_error(ai_agent_execute(tampered, out_dir = out_dir), "Tampering")
 })

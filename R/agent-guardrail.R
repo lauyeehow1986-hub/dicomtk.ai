@@ -18,6 +18,9 @@
 #'   or `"clamp"` (clamps every tag and flag to at least baseline strength).
 #'
 #' @return A validated (or monotonically clamped) `dicom_deid_profile` object.
+#' @examples
+#' base <- dicomtk::dicom_deid_profile("ps3.15")
+#' stronger <- enforce_non_weakening_profile(base, override_tags = list("(0008,1030)" = "X"))
 #' @export
 enforce_non_weakening_profile <- function(baseline,
                                           override_tags = list(),

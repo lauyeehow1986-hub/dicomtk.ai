@@ -14,3 +14,7 @@ Constructs a named list of \code{ellmer::tool()} definitions exposing
 header inspection, automated QC, guardrailed de-identification dry-runs,
 residual-PHI verification, protocol harmonisation, and AI segmentation.
 }
+\examples{
+tools <- dicomtk_mcp_tools()
+names(tools)
+}

@@ -26,6 +26,8 @@
 #'
 #' @return A [tibble::tibble] with columns `finding`, `anatomy`, `polarity`,
 #'   `confidence`, and `sentence`.
+#' @examples
+#' ai_extract_labels("No evidence of pneumothorax. Moderate pleural effusion.")
 #' @export
 ai_extract_labels <- function(text,
                               findings = NULL,
