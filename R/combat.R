@@ -89,8 +89,11 @@ combat_fit <- function(features,
   mod_effect <- if (!is.null(beta_mod)) t(mod_clean %*% beta_mod) else matrix(0, nrow = n_feat, ncol = n_samp)
 
   resid_full <- features - t(design %*% b_hat)
-  var_pooled <- pmax(rowMeans(resid_full^2, na.rm = TRUE), 1e-8)
+  raw_var <- rowMeans(resid_full^2, na.rm = TRUE)
+  zero_var <- !is.finite(raw_var) | raw_var < 1e-12
+  var_pooled <- ifelse(zero_var, 1.0, raw_var)
   s_data <- (features - stand_mean - mod_effect) / sqrt(var_pooled)
+  s_data[zero_var, ] <- 0
 
   gamma_hat <- matrix(0, nrow = n_batch, ncol = n_feat)
   delta_hat <- matrix(1, nrow = n_batch, ncol = n_feat)
@@ -134,6 +137,10 @@ combat_fit <- function(features,
     ref_idx <- match(ref_batch, b_levels)
     gamma_star[ref_idx, ] <- 0
     delta_star[ref_idx, ] <- 1
+  }
+  if (any(zero_var)) {
+    gamma_star[, zero_var] <- 0
+    delta_star[, zero_var] <- 1
   }
 
   rownames(gamma_star) <- b_levels

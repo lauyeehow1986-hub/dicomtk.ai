@@ -61,8 +61,7 @@ ibsi_digital_phantom <- function() {
 
 .radiomics_discretize <- function(vals, discretization, n_bins, bin_width) {
   if (identical(discretization, "none")) {
-    u <- sort(unique(vals))
-    return(match(vals, u))
+    return(as.integer(round(vals)))
   }
   if (identical(discretization, "fbn")) {
     rng <- range(vals)
@@ -119,8 +118,8 @@ ibsi_digital_phantom <- function() {
   if (tot == 0) tot <- 1
   p <- glcm / tot
 
-  ii <- row(p)
-  jj <- col(p)
+  ii <- matrix(levels[row(p)], nrow = ng, ncol = ng)
+  jj <- matrix(levels[col(p)], nrow = ng, ncol = ng)
   mu_x <- sum(ii * p)
   mu_y <- sum(jj * p)
   sd_x <- sqrt(sum(((ii - mu_x)^2) * p))
