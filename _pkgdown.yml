@@ -47,3 +47,13 @@ reference:
       - ai_index_add
       - ai_search_similar
       - ai_index_close
+
+  - title: "IBSI Radiomics, ComBat & MAISI Synthetic Data"
+    desc: "IBSI Phase-1 standardized 3D radiomics, Empirical Bayes ComBat harmonisation, and MONAI MAISI 3D synthetic CT + masks."
+    contents:
+      - ibsi_digital_phantom
+      - ai_extract_radiomics
+      - combat_fit
+      - combat_apply
+      - ai_combat_harmonize
+      - ai_generate_maisi

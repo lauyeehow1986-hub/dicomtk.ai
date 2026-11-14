@@ -1,3 +1,9 @@
+# dicomtk.ai 0.2.0
+
+* **IBSI Phase-1 Radiomics (`R/radiomics-ibsi.R`)**: Added `ibsi_digital_phantom()` and `ai_extract_radiomics()` computing morphology, first-order intensity, 3D GLCM, 3D GLRLM, and 3D GLSZM features.
+* **Train/Test-Safe ComBat Harmonisation (`R/combat.R`)**: Added `combat_fit()`, `combat_apply()`, and `ai_combat_harmonize()` for Empirical Bayes scanner batch harmonisation without test-set leakage.
+* **MONAI MAISI Synthetic Data (`R/maisi-synthetic.R`)**: Added `ai_generate_maisi()` for 3D synthetic CT DICOM series + multi-organ label masks with `DERIVED\\SECONDARY\\SYNTHETIC` provenance tagging.
+
 # dicomtk.ai 0.1.0
 
 * Initial release of `dicomtk.ai`, the AI, MCP, and clinical NLP satellite package for `dicomtk`:
