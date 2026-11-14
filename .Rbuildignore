@@ -9,3 +9,4 @@
 ^\.gitattributes$
 ^dev$
 ^\.worktrees$
+^data-raw$
