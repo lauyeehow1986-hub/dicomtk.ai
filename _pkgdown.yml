@@ -1,0 +1,49 @@
+url: https://lauyeehow1986-hub.github.io/dicomtk.ai/
+template:
+  bootstrap: 5
+
+reference:
+  - title: "ellmer Agents & Non-Weakening Guardrails"
+    desc: "5-stage clinical agent loop, ellmer chat adapters, and monotonic PS3.15 lattice enforcement."
+    contents:
+      - ai_chat
+      - as_ellmer_chat
+      - enforce_non_weakening_profile
+      - ai_agent_plan
+      - ai_agent_dry_run
+      - ai_agent_approve
+      - ai_agent_execute
+      - ai_agent_verify
+
+  - title: "MCP Server (mcptools)"
+    desc: "Expose dicomtk and dicomtk.ai tools to Antigravity, Claude Desktop, and headless MCP clients."
+    contents:
+      - dicomtk_mcp_tools
+      - start_mcp_server
+
+  - title: "Segmentation Backends, Uncertainty & IHE AIR"
+    desc: "Pluggable model registry, voxel-wise entropy uncertainty, and DICOM SEG + TID 1500 export."
+    contents:
+      - register_ai_backend
+      - get_ai_backend
+      - list_ai_backends
+      - ai_backend_health
+      - ai_segment
+      - ai_export_results
+
+  - title: "Clinical NLP & Protocol Harmonisation"
+    desc: "Report de-identification, ConText weak-label extraction, and RadLex / LOINC-RSNA mapping."
+    contents:
+      - ai_deid_report
+      - ai_extract_labels
+      - ai_harmonize_protocol
+      - radlex_playbook
+
+  - title: "Embeddings & DuckDB Vector Search"
+    desc: "Study-level embeddings and cosine similarity retrieval."
+    contents:
+      - ai_embed
+      - ai_embedding_index
+      - ai_index_add
+      - ai_search_similar
+      - ai_index_close

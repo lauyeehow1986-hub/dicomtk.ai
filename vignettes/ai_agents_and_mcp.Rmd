@@ -1,0 +1,60 @@
+---
+title: "Clinical AI Agents, MCP Tooling, and Vector Search with dicomtk.ai"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Clinical AI Agents, MCP Tooling, and Vector Search with dicomtk.ai}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Overview
+
+`dicomtk.ai` extends `dicomtk` with `ellmer`-based clinical imaging agents, a Model Context Protocol (`MCP`) server via `mcptools`, pluggable AI segmentation backends with uncertainty maps, clinical report NLP, `RadLex` / `LOINC-RSNA` protocol harmonisation, and `DuckDB` vector similarity search.
+
+## 1. Guardrailed 5-Stage Agent Workflow
+
+Every de-identification workflow enforces the PS3.15 monotonic join-semilattice (`K < C < U < D < Z < X`), preventing any LLM or caller from weakening the baseline profile:
+
+```{r}
+library(dicomtk)
+library(dicomtk.ai)
+
+synth <- dicom_synthesize(modality = "CT", dims = c(16L, 16L, 4L), phi_profile = "basic")
+out_dir <- tempfile("ai_vignette_out_")
+
+plan <- ai_agent_plan(
+  task = "deid_and_qc",
+  path = synth[["out_dir"]],
+  baseline_profile = dicom_deid_profile("ps3.15"),
+  chat = ai_chat("offline")
+)
+dry <- ai_agent_dry_run(plan)
+approved <- ai_agent_approve(dry, auto_approve = TRUE, approver = "vignette")
+exec_res <- ai_agent_execute(approved, out_dir = out_dir)
+ver <- ai_agent_verify(exec_res)
+ver$passed
+```
+
+## 2. Protocol Harmonisation & Weak-Label Extraction
+
+```{r}
+hdrs <- tibble::tibble(
+  SeriesDescription = c("CHEST WO CON 3.0mm", "BRAIN_T1_POST_GAD"),
+  Modality = c("CT", "MR"),
+  BodyPartExamined = c("CHEST", "HEAD")
+)
+ai_harmonize_protocol(hdrs)
+```
+
+## 3. Cleanup
+
+```{r, include = FALSE}
+unlink(c(synth[["out_dir"]], out_dir), recursive = TRUE)
+```

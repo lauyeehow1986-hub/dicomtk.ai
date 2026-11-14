@@ -25,6 +25,7 @@ Imports:
     duckdb (>= 1.0.0),
     DBI (>= 1.2.0),
     httr2 (>= 1.0.0),
+    curl,
     jsonlite (>= 1.8.0),
     tibble (>= 3.0.0),
     cli (>= 3.6.0),
