@@ -1,0 +1,11 @@
+^.*\.Rproj$
+^\.Rproj\.user$
+^README\.Rmd$
+^\.github$
+^_pkgdown\.yml$
+^docs$
+^dicomtk\.ai\.Rcheck$
+^\.git$
+^\.gitattributes$
+^dev$
+^\.worktrees$

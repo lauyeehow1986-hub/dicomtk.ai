@@ -1,0 +1,16 @@
+# History & session files
+.Rhistory
+.Rapp.history
+.RData
+.RDataTmp
+.Ruserdata
+.Rproj.user/
+
+# R CMD check / build artifacts
+*.Rcheck/
+*.tar.gz
+*.zip
+*.tgz
+
+# Worktrees
+.worktrees/
