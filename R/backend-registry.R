@@ -130,3 +130,39 @@ list_ai_backends <- function(task = NULL) {
   }
   tbl
 }
+
+#' Check Health of a Registered AI Backend
+#'
+#' Probes a registered backend's readiness (`"offline_ready"` for offline
+#' backends, or HTTP GET `/health` / base URL for REST backends).
+#'
+#' @param name Backend name.
+#' @param timeout_sec HTTP timeout in seconds for REST backends (default `3`).
+#' @return A list with `name`, `mode`, `status`, and `endpoint`.
+#' @export
+ai_backend_health <- function(name, timeout_sec = 3) {
+  b <- get_ai_backend(name)
+  if (identical(b$mode, "offline")) {
+    return(list(
+      name = b$name,
+      mode = b$mode,
+      status = "offline_ready",
+      endpoint = b$endpoint
+    ))
+  }
+
+  ok <- tryCatch({
+    resp <- httr2::request(b$endpoint) |>
+      httr2::req_timeout(timeout_sec) |>
+      httr2::req_error(is_error = function(resp) FALSE) |>
+      httr2::req_perform()
+    httr2::resp_status(resp) < 500L
+  }, error = function(e) FALSE)
+
+  list(
+    name = b$name,
+    mode = b$mode,
+    status = if (isTRUE(ok)) "healthy" else "unreachable",
+    endpoint = b$endpoint
+  )
+}
