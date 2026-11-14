@@ -58,7 +58,7 @@ synth <- dicomtk::dicom_synthesize(modality = "CT", dims = c(8L, 8L, 2L))
 on.exit(unlink(synth$out_dir, recursive = TRUE), add = TRUE)
 plan <- ai_agent_plan("deid_only", path = synth$out_dir)
 #> Error in ai_agent_plan("deid_only", path = synth$out_dir): Input path
-#> C:/Users/lauye/AppData/Local/Temp/RtmpcZKoH1/dicom_synth_852c7e2b68f1 does not
+#> C:/Users/lauye/AppData/Local/Temp/RtmpGcIm9O/dicom_synth_4b141df214a does not
 #> exist.
 dry <- ai_agent_dry_run(plan)
 #> Error: object 'plan' not found

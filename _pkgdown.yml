@@ -2,6 +2,37 @@ url: https://lauyeehow1986-hub.github.io/dicomtk.ai/
 template:
   bootstrap: 5
 
+home:
+  links:
+    - text: Install from R-Universe
+      href: https://lauyeehow1986-hub.r-universe.dev
+    - text: dicomtk (Core & WSI)
+      href: https://lauyeehow1986-hub.github.io/dicomtk/
+    - text: dicomtk.server (Server & EHR)
+      href: https://lauyeehow1986-hub.github.io/dicomtk.server/
+    - text: dicomtk.fl (Federated Learning)
+      href: https://lauyeehow1986-hub.github.io/dicomtk.fl/
+
+navbar:
+  structure:
+    left: [intro, reference, articles, news, ecosystem]
+    right: [search, github]
+  components:
+    ecosystem:
+      text: Ecosystem
+      menu:
+        - text: "dicomtk (Core & WSI)"
+          href: https://lauyeehow1986-hub.github.io/dicomtk/
+        - text: "dicomtk.ai (AI, Radiomics & NLP)"
+          href: https://lauyeehow1986-hub.github.io/dicomtk.ai/
+        - text: "dicomtk.server (Server, Custody & EHR)"
+          href: https://lauyeehow1986-hub.github.io/dicomtk.server/
+        - text: "dicomtk.fl (Federated Learning & DP)"
+          href: https://lauyeehow1986-hub.github.io/dicomtk.fl/
+        - text: "---"
+        - text: "R-Universe Registry"
+          href: https://lauyeehow1986-hub.r-universe.dev
+
 reference:
   - title: "ellmer Agents & Non-Weakening Guardrails"
     desc: "5-stage clinical agent loop, ellmer chat adapters, and monotonic PS3.15 lattice enforcement."

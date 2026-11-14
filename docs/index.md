@@ -25,23 +25,23 @@ Or install from GitHub:
 
 ### 1. Guardrailed 5-Stage Agent Loop (`ellmer`)
 
-[`library`](https://rdrr.io/r/base/library.html)`(`[`dicomtk.ai`](https://lauyeehow1986-hub.github.io/dicomtk.ai/)`)`` `` ``# The non-weakening guardrail prevents an LLM from disabling PS3.15 de-id,`` ``# lowering pixel-cleaning confidence, or skipping attestation verification.`` ``guard`` ``<-`` ``ai_guardrail_policy``(``strict ``=`` ``TRUE``)`` ``agent`` ``<-`` ``dicom_agent_create``(``policy ``=`` ``guard``, backend ``=`` ``"offline"``)`
+[`library`](https://rdrr.io/r/base/library.html)`(`[`dicomtk.ai`](https://lauyeehow1986-hub.github.io/dicomtk.ai/)`)`` `` ``# The non-weakening guardrail prevents an LLM from disabling PS3.15 de-id,`` ``# lowering pixel-cleaning confidence, or skipping attestation verification.`` ``profile`` ``<-`` `[`enforce_non_weakening_profile`](https://lauyeehow1986-hub.github.io/dicomtk.ai/reference/enforce_non_weakening_profile.md)`(`` `` requested ``=`` `[`list`](https://rdrr.io/r/base/list.html)`(``jurisdiction ``=`` ``"HIPAA"``, verify_attestation ``=`` ``TRUE``)``,`` `` baseline ``=`` `[`list`](https://rdrr.io/r/base/list.html)`(``jurisdiction ``=`` ``"HIPAA"``, verify_attestation ``=`` ``TRUE``)`` ``)`` ``# 5-stage pipeline: ai_agent_plan() -> ai_agent_dry_run() -> ai_agent_approve() -> ai_agent_execute() -> ai_agent_verify()`
 
 ### 2. AI Segmentation, Uncertainty Quantification & `IHE AIR` Export
 
-`# Register or select an AI segmentation backend (offline demo or REST/MONAI)`` ``reg`` ``<-`` ``ai_backend_registry``(``)`` ``# seg_res <- ai_segment_volume(vol, model = "offline_demo", return_uncertainty = TRUE)`` ``# air_bundle <- export_ihe_air(seg_res)`
+[`list_ai_backends`](https://lauyeehow1986-hub.github.io/dicomtk.ai/reference/list_ai_backends.md)`(``)`` ``# seg_res <- ai_segment(vol, backend = "offline_demo")`` ``# air_bundle <- ai_export_results(seg_res, format = "ihe_air")`
 
 ### 3. Clinical NLP: Report De-Identification, Weak Labels & Protocol Harmonisation
 
-`report`` ``<-`` ``"Patient John Tan (NRIC S8512345A) underwent CT Thorax on 2026-04-12. Impression: 12mm RUL nodule."`` ``deid_rep`` ``<-`` ``nlp_deid_report``(``report``)`` ``deid_rep``$``redacted_text`` `` ``# Extract weak clinical labels & harmonize acquisition protocol names to RadLex`` ``nlp_extract_labels``(``deid_rep``$``redacted_text``)`` ``harmonize_protocol``(``"CT CHEST W/O IV CONT"``)`
+`report`` ``<-`` ``"Patient John Tan (NRIC S8512345A) underwent CT Thorax on 2026-04-12. Impression: 12mm RUL nodule."`` ``deid_rep`` ``<-`` `[`ai_deid_report`](https://lauyeehow1986-hub.github.io/dicomtk.ai/reference/ai_deid_report.md)`(``report``)`` ``deid_rep``$``redacted_text`` `` ``# Extract weak clinical labels & harmonize acquisition protocol names to RadLex`` `[`ai_extract_labels`](https://lauyeehow1986-hub.github.io/dicomtk.ai/reference/ai_extract_labels.md)`(``deid_rep``$``redacted_text``)`` `[`ai_harmonize_protocol`](https://lauyeehow1986-hub.github.io/dicomtk.ai/reference/ai_harmonize_protocol.md)`(``"CT CHEST W/O IV CONT"``)`
 
 ### 4. Foundation Embeddings & DuckDB Similar-Case Retrieval
 
-`# Store 3D study embeddings in DuckDB and retrieve top-k similar cases`` ``idx`` ``<-`` ``embed_index_create``(``)`` ``embed_index_add``(``idx``, study_id ``=`` ``"STUDY_001"``, vector ``=`` `[`rnorm`](https://rdrr.io/r/stats/Normal.html)`(``64``)``)`` ``embed_index_search``(``idx``, query_vector ``=`` `[`rnorm`](https://rdrr.io/r/stats/Normal.html)`(``64``)``, k ``=`` ``5L``)`
+`idx`` ``<-`` `[`ai_embedding_index`](https://lauyeehow1986-hub.github.io/dicomtk.ai/reference/ai_embedding_index.md)`(``)`` `[`ai_index_add`](https://lauyeehow1986-hub.github.io/dicomtk.ai/reference/ai_index_add.md)`(``idx``, study_id ``=`` ``"STUDY_001"``, embedding ``=`` `[`rnorm`](https://rdrr.io/r/stats/Normal.html)`(``64``)``)`` `[`ai_search_similar`](https://lauyeehow1986-hub.github.io/dicomtk.ai/reference/ai_search_similar.md)`(``idx``, query_embedding ``=`` `[`rnorm`](https://rdrr.io/r/stats/Normal.html)`(``64``)``, top_k ``=`` ``5L``)`` `[`ai_index_close`](https://lauyeehow1986-hub.github.io/dicomtk.ai/reference/ai_index_close.md)`(``idx``)`
 
 ### 5. IBSI Phase-1 Standardized 3D Radiomics Engine
 
-`# Verify against the built-in IBSI Phase-1 digital phantom`` ``ibsi_res`` ``<-`` ``radiomics_verify_ibsi_phantom``(``)`` ``ibsi_res``$``passed`` `` ``# Extract 5 feature families (Intensity, Shape, GLCM, GLRLM, GLSZM)`` ``# feats <- extract_radiomics_3d(vol, mask, bin_width = 25)`
+`# Verify against the built-in IBSI Phase-1 digital phantom`` ``phantom`` ``<-`` `[`ibsi_digital_phantom`](https://lauyeehow1986-hub.github.io/dicomtk.ai/reference/ibsi_digital_phantom.md)`(``)`` ``feats`` ``<-`` `[`ai_extract_radiomics`](https://lauyeehow1986-hub.github.io/dicomtk.ai/reference/ai_extract_radiomics.md)`(``phantom``$``volume``, ``phantom``$``mask``, discretization ``=`` ``"none"``)`
 
 ### 6. Train/Test-Safe Empirical Bayes ComBat Harmonisation
 
@@ -49,7 +49,7 @@ Or install from GitHub:
 
 ### 7. MONAI MAISI-Style 3D Synthetic CT & Multi-Organ Mask Generator
 
-`syn`` ``<-`` ``maisi_generate_ct``(``dim ``=`` `[`c`](https://rdrr.io/r/base/c.html)`(``64L``, ``64L``, ``32L``)``, seed ``=`` ``2026L``)`` `[`dim`](https://rdrr.io/r/base/dim.html)`(``syn``$``ct_volume``$``voxels``)`` `[`table`](https://rdrr.io/r/base/table.html)`(``syn``$``organ_mask``)`
+`syn`` ``<-`` `[`ai_generate_maisi`](https://lauyeehow1986-hub.github.io/dicomtk.ai/reference/ai_generate_maisi.md)`(``dim ``=`` `[`c`](https://rdrr.io/r/base/c.html)`(``64L``, ``64L``, ``32L``)``, seed ``=`` ``2026L``)`` `[`dim`](https://rdrr.io/r/base/dim.html)`(``syn``$``volume``$``voxels``)`` `[`table`](https://rdrr.io/r/base/table.html)`(``syn``$``mask``)`
 
 ### 8. Documentation
 
